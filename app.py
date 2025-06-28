@@ -2,20 +2,36 @@ import streamlit as st
 import pandas as pd
 import pickle
 import os
-import gdown  # Used to download large model files from Google Drive
+import gdown
 
-# Load model from Google Drive
+# Load model with error handling
 model_path = "car_price_model.pkl"
 file_id = "1h6RePlHS4Q6U6yP_J6SEBhqgskVjDSx1"
 gdrive_url = f"https://drive.google.com/uc?id={file_id}"
 
-if not os.path.exists(model_path):
-    with st.spinner("Downloading model from Google Drive..."):
-        gdown.download(gdrive_url, model_path, quiet=False)
-
-# Load the model
-with open(model_path, 'rb') as f:
-    model = pickle.load(f)
+try:
+    if not os.path.exists(model_path):
+        with st.spinner("Downloading model from Google Drive..."):
+            gdown.download(gdrive_url, model_path, quiet=False)
+    
+    # Try different pickle loading methods
+    try:
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
+    except UnicodeDecodeError:
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f, encoding='latin1')
+    except Exception as e:
+        st.error(f"Failed to load model: {str(e)}")
+        st.stop()
+        
+except Exception as e:
+    st.error(f"Model loading failed: {str(e)}")
+    st.error("Please ensure:")
+    st.error("1. You have internet connection")
+    st.error("2. The Google Drive file exists and is accessible")
+    st.error("3. You have all required packages installed")
+    st.stop()
 
 
 st.set_page_config(page_title="Car Price Predictor", layout="centered")
