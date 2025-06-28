@@ -1,9 +1,21 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import os
+import gdown  # Used to download large model files from Google Drive
+
+# Load model from Google Drive
+model_path = "car_price_model.pkl"
+file_id = "1h6RePlHS4Q6U6yP_J6SEBhqgskVjDSx1"
+gdrive_url = f"https://drive.google.com/uc?id={file_id}"
+
+if not os.path.exists(model_path):
+    with st.spinner("Downloading model from Google Drive..."):
+        gdown.download(gdrive_url, model_path, quiet=False)
 
 # Load the model
-model = pickle.load(open('car_price_model.pkl', 'rb'))
+with open(model_path, 'rb') as f:
+    model = pickle.load(f)
 
 
 st.set_page_config(page_title="Car Price Predictor", layout="centered")
