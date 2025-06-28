@@ -22,13 +22,9 @@ image_urls = [
 # Convert list to JS array
 js_array = "[" + ", ".join([f'"{url}"' for url in image_urls]) + "]"
 
-# Inject the rotating background with HTML + CSS + JS
 components.html(f"""
-<!DOCTYPE html>
-<html>
-<head>
 <style>
-body {{
+#root {{
     margin: 0;
     overflow: hidden;
 }}
@@ -37,27 +33,25 @@ body {{
     position: fixed;
     top: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     background-size: cover;
     background-position: center;
     z-index: -1;
     transition: background-image 1s ease-in-out;
 }}
 
-/* Optional: dark overlay for readability */
 .overlay {{
     position: fixed;
     top: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Adjust transparency */
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.4);
     z-index: -1;
 }}
 </style>
-</head>
-<body>
+
 <div class="bg" id="bg"></div>
 <div class="overlay"></div>
 
@@ -74,8 +68,6 @@ function rotateBackground() {{
 rotateBackground();
 setInterval(rotateBackground, 5000);
 </script>
-</body>
-</html>
 """, height=0)
 
 
