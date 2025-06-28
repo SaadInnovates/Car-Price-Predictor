@@ -71,7 +71,7 @@ if submit:
         st.warning("Please enter the model name.")
     else:
         age = 2025 - year
-        price_per_km = asking_price / kms_driven if kms_driven > 0 else 
+        price_per_km = asking_price / kms_driven if kms_driven > 0 else 0
         input_df = pd.DataFrame({
         'Brand': [brand],
         'Condition': [condition],
