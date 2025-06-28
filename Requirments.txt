@@ -2,6 +2,6 @@ streamlit
 numpy
 pandas
 matplotlib
-sklearn
+scikit-learn
 scipy
 RandomForestRegressor
