@@ -1,4 +1,10 @@
-# Car-Price-Predictor
-I created a Car Price Predictor Web App using Streamlit and used Machine Learning Model for Training. RandomForestRegressor is used as model for dataset . The data source is OLX for used car prices in Pakistan. 
-R2 Score for RandomForestRegressor : 0.92
-Cross Validation Score is the same almost maybe 0.90
+# Car Price Predictor
+A machine learning-powered web app to estimate the fair market price of used cars in Pakistan. Built using Streamlit, this project enables users to input car details and receive an accurate price prediction.
+# Features
+- Predicts car price using a trained CatBoost regression model
+
+- Clean and responsive Streamlit web UI
+
+- Inputs include brand, model, year, fuel type, city, condition, kilometers driven, etc.
+
+-Model is hosted and downloaded securely from Google Drive
