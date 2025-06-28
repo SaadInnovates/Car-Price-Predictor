@@ -9,14 +9,16 @@ A machine learning-powered web app to estimate the fair market price of used car
 
 - Model is hosted and downloaded securely from Google Drive
 
-# Tech Stack
-## Tool	                          Purpose
-- Python	                Core programming language
-- Pandas	                  Data manipulation
-- Streamlit	            Web application interface
-- RandomForestRegressor	Regression model for prediction
-- Joblib	                 Model serialization
-- gdown	                Secure model file download
+### 📊 Tech Stack
+
+| Tool                 | Purpose                          |
+|----------------------|----------------------------------|
+| Python               | Core programming language        |
+| Pandas               | Data manipulation                |
+| Streamlit            | Web application interface        |
+| RandomForestRegressor| Regression model for prediction  |
+| Joblib               | Model serialization              |
+| gdown                | Secure model file download       |
 
 # 🧠 Machine Learning Model
 Trained using historical car listings data
