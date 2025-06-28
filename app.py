@@ -19,6 +19,11 @@ image_urls = [
     "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image10.jfif"
 ]
 
+
+# Convert list to JS array
+js_array = "[" + ", ".join([f'"{url}"' for url in image_urls]) + "]"
+
+
 components.html(f"""
 <div class="bg" id="bg"></div>
 <div class="overlay"></div>
@@ -65,8 +70,6 @@ setInterval(rotateBackground, 5000);
 """, height=0)
 
 
-# Convert list to JS array
-js_array = "[" + ", ".join([f'"{url}"' for url in image_urls]) + "]"
 
 
 
