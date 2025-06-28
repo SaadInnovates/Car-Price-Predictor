@@ -1,6 +1,12 @@
-streamlit
-joblib
-pandas
-numpy
-scikit-learn
-gdown
+# Core Requirements
+scikit-learn==1.0.2  # Critical - exact version that works with your model
+joblib==1.2.0        # Optimized for sklearn models
+gdown==4.7.1         # For reliable Google Drive downloads
+
+# Streamlit and Dependencies
+streamlit==1.28.0
+pandas==2.0.3
+numpy==1.24.4        # Compatible with sklearn 1.0.2
+
+# Backward Compatibility Layer
+protobuf==3.20.3     # Prevents potential protobuf conflicts
