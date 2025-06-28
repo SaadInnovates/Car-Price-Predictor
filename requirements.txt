@@ -1,5 +1,7 @@
 streamlit
 gdown
+os
+pickle
 numpy
 pandas
 matplotlib
