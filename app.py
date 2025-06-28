@@ -5,7 +5,7 @@ import gdown
 from joblib import load
 from importlib.metadata import version
 
-# --- Load the model from joblib file ---
+# --- Load the model ---
 @st.cache_resource
 def load_model():
     model_path = "car_price_model.joblib"
@@ -19,7 +19,7 @@ def load_model():
 
 model = load_model()
 
-# --- Page Configuration ---
+# --- Page Config ---
 st.set_page_config(
     page_title="Car Price Predictor",
     layout="centered",
@@ -62,7 +62,6 @@ with st.form("prediction_form"):
         ])
         kms_driven = st.number_input("KMs Driven", min_value=0, value=50000, step=1000)
         transaction_type = st.selectbox("Transaction Type", ["Cash", "Installment"])
-        wanted_price = st.number_input("Your Wanted Price (PKR)", min_value=0, value=1500000, step=50000)
 
     submit = st.form_submit_button("Predict Price", type="primary")
 
@@ -73,7 +72,7 @@ if submit:
     else:
         try:
             age = 2025 - year
-            price_per_km = wanted_price / kms_driven if kms_driven > 0 else 0
+            price_per_km = 0  # or remove if not used in your model
 
             input_df = pd.DataFrame([{
                 'Brand': brand,
@@ -85,8 +84,7 @@ if submit:
                 'Year': year,
                 'Price Per KM': price_per_km,
                 'Age': age,
-                'Transaction Type': transaction_type,
-                'Your Wanted Price': wanted_price
+                'Transaction Type': transaction_type
             }])
 
             with st.spinner("🤖 Calculating fair price..."):
