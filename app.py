@@ -61,7 +61,7 @@ with st.form("prediction_form"):
             'Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other'
         ])
         kms_driven = st.number_input("KMs Driven", min_value=0, value=50000, step=1000)
-        transaction_type = st.selectbox("Transaction Type", ["Cash", "Installment"])
+        transaction_type = st.selectbox("Transaction Type", ["Cash", "Installment/Lease"])
         wanted_price = st.number_input("Your Wanted Price (PKR)", min_value=0, value=1500000, step=50000)
 
     submit = st.form_submit_button("Predict Price", type="primary")
