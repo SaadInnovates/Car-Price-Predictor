@@ -1,51 +1,39 @@
 import streamlit as st
-import pandas as pd
-from joblib import load
-import os
-import gdown
-import sklearn
-import sys
 import subprocess
-from importlib.metadata import version
+import sys
+import os
 
-# --- Version Compatibility Solution ---
-def ensure_compatibility():
-    """Handle sklearn version conflicts for Streamlit Cloud"""
-    try:
-        # Try modern import first
-        from sklearn.compose import ColumnTransformer
-    except AttributeError:
-        try:
-            # Apply compatibility patch
-            import sklearn.compose._column_transformer
-            if not hasattr(sklearn.compose._column_transformer, '_RemainderColsList'):
-                setattr(sklearn.compose._column_transformer, '_RemainderColsList', list)
-        except Exception as e:
-            st.error("COMPATIBILITY FIX FAILED")
-            st.error("Installing scikit-learn 1.0.2...")
-            subprocess.run([sys.executable, "-m", "pip", "install", "scikit-learn==1.0.2"], check=True)
-            st.rerun()
+# --- Step 1: Force sklearn 1.0.2 installation ---
+try:
+    import sklearn
+    if sklearn.__version__ != "1.0.2":
+        raise ImportError("Wrong sklearn version")
+except:
+    st.warning("Installing scikit-learn 1.0.2...")
+    subprocess.run([
+        sys.executable, "-m", "pip", "install",
+        "scikit-learn==1.0.2",
+        "--force-reinstall"
+    ], check=True)
+    st.rerun()
 
-# --- Model Loader ---
-@st.cache_resource(ttl=24*3600)
+# --- Step 2: Apply patch BEFORE other imports ---
+from patch_sklearn import *  # Must come before joblib import
+from joblib import load
+
+# --- Step 3: Model Loading ---
+@st.cache_resource
 def load_model():
-    ensure_compatibility()  # Apply fixes before loading
-    
-    MODEL_PATH = "car_price_model.joblib"
-    GDRIVE_ID = "183946cS8Mjmcz7-qiVGU21_84iVDr5ZH"
-    
-    if not os.path.exists(MODEL_PATH):
-        with st.spinner("Downloading model from Google Drive..."):
-            gdown.download(f"https://drive.google.com/uc?id={GDRIVE_ID}", MODEL_PATH, quiet=True)
-    
-    try:
-        return load(MODEL_PATH)
-    except Exception as e:
-        st.error(f"Model loading failed: {str(e)}")
-        st.error(f"scikit-learn version: {version('scikit-learn')}")
-        st.stop()
+    model_path = "car_price_model.joblib"
+    if not os.path.exists(model_path):
+        import gdown
+        gdown.download(
+            "https://drive.google.com/uc?id=183946cS8Mjmcz7-qiVGU21_84iVDr5ZH",
+            model_path, quiet=True
+        )
+    return load(model_path)
 
-# --- App Code ---
+# --- Rest of your Streamlit app remains unchanged ---
 model = load_model()
 
 st.set_page_config(page_title="Car Price Predictor", layout="centered", menu_items={
