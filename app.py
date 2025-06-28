@@ -1,4 +1,83 @@
 import streamlit as st
+import streamlit.components.v1 as components
+
+# Optional: Set wide layout
+st.set_page_config(layout="wide")
+
+# Background image URLs from your GitHub repo
+image_urls = [
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image1.jpeg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image2.gif",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image3.png",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image4.jpg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image5.jpeg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image6.gif",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image7.png",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image8.jpeg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image9.jpg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image10.png"
+]
+
+# Convert list to JS array
+js_array = "[" + ", ".join([f'"{url}"' for url in image_urls]) + "]"
+
+# Inject the rotating background with HTML + CSS + JS
+components.html(f"""
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {{
+    margin: 0;
+    overflow: hidden;
+}}
+
+.bg {{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+    transition: background-image 1s ease-in-out;
+}}
+
+/* Optional: dark overlay for readability */
+.overlay {{
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Adjust transparency */
+    z-index: -1;
+}}
+</style>
+</head>
+<body>
+<div class="bg" id="bg"></div>
+<div class="overlay"></div>
+
+<script>
+const images = {js_array};
+let index = 0;
+const bg = document.getElementById("bg");
+
+function rotateBackground() {{
+    bg.style.backgroundImage = `url('${{images[index]}}')`;
+    index = (index + 1) % images.length;
+}}
+
+rotateBackground();
+setInterval(rotateBackground, 5000);
+</script>
+</body>
+</html>
+""", height=0)
+
+
 import pandas as pd
 import os
 import gdown
