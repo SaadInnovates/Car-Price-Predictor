@@ -1,8 +1,5 @@
 streamlit
-gdown
-pickle
-numpy
 pandas
-matplotlib
+numpy
 scikit-learn
-scipy
+gdown
