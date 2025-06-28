@@ -19,22 +19,17 @@ image_urls = [
     "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image10.jfif"
 ]
 
-# Convert list to JS array
-js_array = "[" + ", ".join([f'"{url}"' for url in image_urls]) + "]"
-
 components.html(f"""
-<style>
-#root {{
-    margin: 0;
-    overflow: hidden;
-}}
+<div class="bg" id="bg"></div>
+<div class="overlay"></div>
 
+<style>
 .bg {{
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     background-size: cover;
     background-position: center;
     z-index: -1;
@@ -45,15 +40,12 @@ components.html(f"""
     position: fixed;
     top: 0;
     left: 0;
-    height: 100vh;
-    width: 100vw;
-    background: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
     z-index: -1;
 }}
 </style>
-
-<div class="bg" id="bg"></div>
-<div class="overlay"></div>
 
 <script>
 const images = {js_array};
@@ -61,14 +53,22 @@ let index = 0;
 const bg = document.getElementById("bg");
 
 function rotateBackground() {{
-    bg.style.backgroundImage = `url('${{images[index]}}')`;
-    index = (index + 1) % images.length;
+    if (bg) {{
+        bg.style.backgroundImage = `url('${{images[index]}}')`;
+        index = (index + 1) % images.length;
+    }}
 }}
 
 rotateBackground();
 setInterval(rotateBackground, 5000);
 </script>
 """, height=0)
+
+
+# Convert list to JS array
+js_array = "[" + ", ".join([f'"{url}"' for url in image_urls]) + "]"
+
+
 
 
 import pandas as pd
