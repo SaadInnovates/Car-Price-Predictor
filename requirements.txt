@@ -4,4 +4,3 @@ pandas
 matplotlib
 scikit-learn
 scipy
-RandomForestRegressor
