@@ -3,101 +3,145 @@ import pandas as pd
 from joblib import load
 import os
 import gdown
+import sklearn
+from importlib.metadata import version
 
-# --- Model Loading with Joblib ---
-@st.cache_resource(ttl=24*3600)  # Cache for 24 hours
-def load_model():
-    model_path = "car_price_model.joblib"
-    file_id = "183946cS8Mjmcz7-qiVGU21_84iVDr5ZH"
-    
-    if not os.path.exists(model_path):
-        with st.spinner("Downloading model from Google Drive (this may take a minute)..."):
-            gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=True)
-    
+# --- Version Compatibility Guarantee ---
+def ensure_sklearn_compatibility():
+    """Handle sklearn version conflicts automatically"""
     try:
-        return load(model_path)
+        # Try modern import first
+        from sklearn.compose import ColumnTransformer
+    except AttributeError:
+        try:
+            # Patch for older versions
+            import sklearn.compose._column_transformer
+            if not hasattr(sklearn.compose._column_transformer, '_RemainderColsList'):
+                setattr(sklearn.compose._column_transformer, '_RemainderColsList', list)
+        except Exception as e:
+            st.error(f"SKLEARN COMPATIBILITY ERROR: {str(e)}")
+            st.error(f"Detected scikit-learn v{version('scikit-learn')}")
+            st.stop()
+
+# --- Robust Model Loader ---
+@st.cache_resource(ttl=24*3600)
+def load_model():
+    MODEL_PATH = "car_price_model.joblib"
+    GDRIVE_ID = "183946cS8Mjmcz7-qiVGU21_84iVDr5ZH"
+    
+    # 1. Download with progress feedback
+    if not os.path.exists(MODEL_PATH):
+        try:
+            with st.spinner("🔽 Downloading model (15-30MB)..."):
+                gdown.download(
+                    f"https://drive.google.com/uc?id={GDRIVE_ID}",
+                    MODEL_PATH,
+                    quiet=False
+                )
+            st.toast("Download completed!", icon="✅")
+        except Exception as e:
+            st.error(f"DOWNLOAD FAILED: {str(e)}")
+            st.error("Possible solutions:")
+            st.error("1. Check internet connection")
+            st.error("2. Verify Google Drive file permissions")
+            st.stop()
+    
+    # 2. Load with version safety
+    ensure_sklearn_compatibility()
+    try:
+        return load(MODEL_PATH)
     except Exception as e:
-        st.error(f"Failed to load model: {str(e)}")
-        st.error("Please ensure:")
-        st.error("1. You have scikit-learn installed")
-        st.error("2. The file exists in Google Drive")
+        st.error("MODEL LOADING FAILED")
+        st.error(f"Error: {str(e)}")
+        st.error(f"scikit-learn v{version('scikit-learn')} detected")
+        st.error("Try: pip install scikit-learn==1.0.2")
         st.stop()
 
+# --- App Initialization ---
 model = load_model()
+st.set_page_config(page_title="Car Price Predictor", layout="centered", menu_items={
+    'Get Help': 'https://github.com/your-repo',
+    'Report a bug': "mailto:support@example.com"
+})
 
-# --- App UI ---
-st.set_page_config(page_title="Car Price Predictor", layout="centered")
+# --- UI Components ---
 st.title("🚗 Car Price Predictor")
-st.markdown("Enter your car's details to get an estimated resale price.")
+st.caption("v2.1 | sklearn v" + version('scikit-learn'))
 
-brands = [
-    'Toyota', 'Suzuki', 'Honda', 'Daihatsu', 'Mitsubishi', 'KIA', 'Other Brands',
-    'Nissan', 'BMW', 'Mazda', 'Chevrolet', 'Daewoo', 'Hyundai', 'FAW',
-    'Mercedes', 'Classic & Antiques', 'Lexus', 'Audi', 'Range Rover', 'Changan',
-    'Porsche', 'Subaru', 'Land Rover', 'Others'
-]
+with st.expander("ℹ️ About this app"):
+    st.write("""
+    This app predicts used car prices using machine learning.
+    For accurate results, please provide complete information.
+    """)
 
-conditions = ['Used', 'New']
-fuel_types = ['Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other']
-registered_cities = sorted([
-    'Karachi', 'Hyderabad', 'Bagh', 'Sukkar', 'Bahawalnagar', 'Lahore',
-    'Askoley', 'Khanpur', 'Quetta', 'Karak', 'Islamabad', 'Sialkot',
-    'Pakpattan', 'Lasbela', 'Sukkur', 'Rawalpindi', 'Bahawalpur',
-    'Ali Masjid', 'Multan', 'Khaplu', 'Tank', 'Badin',
-    'Rahimyar Khan', 'Chilas', 'Kasur', 'Khushab', 'Vehari', 'Chitral',
-    'Khanewal', 'Attock', 'Larkana', 'Bela', 'Khairpur', 'Kandhura',
-    'Abbottabad', 'Nawabshah', 'Bhimber', 'Mardan', 'Chiniot',
-    'Faisalabad', 'Sahiwal', 'Haripur', 'Peshawar', 'Kohat',
-    'Sargodha', 'Jhelum', 'Gujrat', 'Nowshera', 'Gujranwala', 'Mirpur',
-    'Burewala', 'Mandi Bahauddin', 'Muzaffargarh', 'Wah',
-    'Dera Ghazi Khan', 'Sheikhupura', 'Okara', 'Dera Ismail Khan',
-    'Swat', 'Swabi', 'Muzaffarabad', 'Other'
-])
-transaction_types = ['Cash', 'Installment/Leasing', 'Other']
-
-with st.form("car_form"):
+# --- Data Input Section ---
+with st.form("prediction_form"):
     col1, col2 = st.columns(2)
 
     with col1:
-        brand = st.selectbox("Brand", brands)
-        condition = st.selectbox("Condition", conditions)
-        fuel = st.selectbox("Fuel Type", fuel_types)
-        year = st.slider("Year", 1990, 2024, 2018)
+        brand = st.selectbox("Brand", [
+            'Toyota', 'Suzuki', 'Honda', 'Daihatsu', 'Mitsubishi', 'KIA', 'Other Brands',
+            'Nissan', 'BMW', 'Mazda', 'Chevrolet', 'Daewoo', 'Hyundai', 'FAW',
+            'Mercedes', 'Classic & Antiques', 'Lexus', 'Audi', 'Range Rover', 'Changan',
+            'Porsche', 'Subaru', 'Land Rover', 'Others'
+        ], index=0)
+
+        condition = st.radio("Condition", ['Used', 'New'], horizontal=True)
+        year = st.slider("Manufacturing Year", 1990, 2024, 2018, help="Select between 1990-2024")
 
     with col2:
-        registered_city = st.selectbox("Registered City", registered_cities)
-        transaction = st.selectbox("Transaction Type", transaction_types)
-        kms_driven = st.number_input("KMs Driven", min_value=0, step=1000)
-        asking_price = st.number_input("Your Asking Price (optional)", min_value=0)
+        registered_city = st.selectbox("Registered City", sorted([
+            'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Multan', 'Other'
+        ]))
+        
+        fuel = st.selectbox("Fuel Type", [
+            'Petrol', 'Diesel', 'Hybrid', 'Electric', 'Other'
+        ])
+        
+        kms_driven = st.number_input("KMs Driven", 
+            min_value=0, 
+            value=50000,
+            step=1000,
+            help="Total kilometers driven"
+        )
 
-    model_name = st.text_input("Model (e.g., Corolla Altis, Civic Oriel)")
+    model_name = st.text_input("Model Name", placeholder="Corolla Altis, Civic Oriel etc.")
+    submit = st.form_submit_button("Predict Price", type="primary")
 
-    submit = st.form_submit_button("Predict Price")
-
+# --- Prediction Logic ---
 if submit:
-    if model_name.strip() == "":
-        st.warning("Please enter the model name.")
+    if not model_name.strip():
+        st.warning("Please enter the car model name")
     else:
-        age = 2025 - year
-        price_per_km = asking_price / kms_driven if kms_driven > 0 else 0
-        input_df = pd.DataFrame({
-            'Brand': [brand],
-            'Condition': [condition],
-            'Fuel': [fuel],
-            'KMs Driven': [kms_driven],
-            'Model': [model_name],
-            'Price': [asking_price],
-            'Registered City': [registered_city],
-            'Transaction Type': [transaction],
-            'Year': [year],
-            'Price Per KM': [price_per_km],
-            'Age': [age]
-        })
-
         try:
-            prediction = model.predict(input_df)[0]
-            st.markdown("### 🧠 Predicted Resale Price")
-            st.success(f"💰 Estimated Price: **PKR {prediction:,.0f}**")
+            # Feature engineering
+            age = 2025 - year
+            price_per_km = st.session_state.get('asking_price', 0) / kms_driven if kms_driven > 0 else 0
+            
+            # Create input dataframe
+            input_df = pd.DataFrame([{
+                'Brand': brand,
+                'Condition': condition,
+                'Fuel': fuel,
+                'KMs Driven': kms_driven,
+                'Model': model_name,
+                'Registered City': registered_city,
+                'Year': year,
+                'Price Per KM': price_per_km,
+                'Age': age
+            }])
+
+            # Prediction
+            with st.spinner("🤖 Calculating fair price..."):
+                prediction = model.predict(input_df)[0]
+                
+            # Display results
+            st.balloons()
+            st.success(f"### Estimated Value: PKR {prediction:,.0f}")
+            
+            with st.expander("Details"):
+                st.json(input_df.iloc[0].to_dict())
+                
         except Exception as e:
             st.error(f"Prediction failed: {str(e)}")
-            st.error("Please check your input values")
+            st.code(str(e), language='python')
