@@ -72,8 +72,8 @@ if submit:
     else:
         age = 2025 - year
         price_per_km = asking_price / kms_driven if kms_driven > 0 else 
-        input_df = pd.DataFrame(
-            'Brand': [brand],
+        input_df = pd.DataFrame({
+        'Brand': [brand],
         'Condition': [condition],
         'Fuel': [fuel],
         'KMs Driven': [kms_driven],
