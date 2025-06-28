@@ -70,17 +70,22 @@ if submit:
     if model_name.strip() == "":
         st.warning("Please enter the model name.")
     else:
-        input_df = pd.DataFrame({
+        age = 2025 - year
+        price_per_km = asking_price / kms_driven if kms_driven > 0 else 
+        input_df = pd.DataFrame(
             'Brand': [brand],
-            'Condition': [condition],
-            'Fuel': [fuel],
-            'KMs Driven': [kms_driven],
-            'Model': [model_name],
-            'Price': [asking_price],
-            'Registered City': [registered_city],
-            'Transaction Type': [transaction],
-            'Year': [year]
+        'Condition': [condition],
+        'Fuel': [fuel],
+        'KMs Driven': [kms_driven],
+        'Model': [model_name],
+        'Price': [asking_price],
+        'Registered City': [registered_city],
+        'Transaction Type': [transaction],
+        'Year': [year],
+        'Price Per KM': [price_per_km],
+        'Age': [age]
         })
+
 
         prediction = model.predict(input_df)[0]
         st.markdown("### 🧠 Predicted Resale Price")
