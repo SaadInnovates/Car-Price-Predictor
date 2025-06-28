@@ -10,7 +10,7 @@ A machine learning-powered web app to estimate the fair market price of used car
 - Model is hosted and downloaded securely from Google Drive
 
 # Tech Stack
-# Tool	                          Purpose
+## Tool	                          Purpose
 - Python	                Core programming language
 - Pandas	                  Data manipulation
 - Streamlit	            Web application interface
