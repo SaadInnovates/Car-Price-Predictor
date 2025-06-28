@@ -5,11 +5,12 @@ import os
 import gdown
 import sklearn
 import sys
+import subprocess
 from importlib.metadata import version
 
 # --- Version Compatibility Solution ---
-def patch_sklearn():
-    """Permanent solution for _RemainderColsList error"""
+def ensure_compatibility():
+    """Handle sklearn version conflicts for Streamlit Cloud"""
     try:
         # Try modern import first
         from sklearn.compose import ColumnTransformer
@@ -19,49 +20,32 @@ def patch_sklearn():
             import sklearn.compose._column_transformer
             if not hasattr(sklearn.compose._column_transformer, '_RemainderColsList'):
                 setattr(sklearn.compose._column_transformer, '_RemainderColsList', list)
-                st.toast("Applied sklearn compatibility patch", icon="🔧")
         except Exception as e:
-            st.error(f"CRITICAL VERSION ERROR: {str(e)}")
-            st.error(f"Current scikit-learn: v{version('scikit-learn')}")
-            st.error("Required version: 1.0.x or 1.1.x")
-            st.stop()
+            st.error("COMPATIBILITY FIX FAILED")
+            st.error("Installing scikit-learn 1.0.2...")
+            subprocess.run([sys.executable, "-m", "pip", "install", "scikit-learn==1.0.2"], check=True)
+            st.rerun()
 
-# --- Robust Model Loader ---
+# --- Model Loader ---
 @st.cache_resource(ttl=24*3600)
 def load_model():
+    ensure_compatibility()  # Apply fixes before loading
+    
     MODEL_PATH = "car_price_model.joblib"
     GDRIVE_ID = "183946cS8Mjmcz7-qiVGU21_84iVDr5ZH"
     
-    # Apply version fix before loading
-    patch_sklearn()
-    
-    # Download if missing
     if not os.path.exists(MODEL_PATH):
-        with st.spinner("Downloading model (20-30MB)..."):
-            try:
-                gdown.download(f"https://drive.google.com/uc?id={GDRIVE_ID}", MODEL_PATH, quiet=True)
-            except Exception as e:
-                st.error(f"Download failed: {str(e)}")
-                st.stop()
+        with st.spinner("Downloading model from Google Drive..."):
+            gdown.download(f"https://drive.google.com/uc?id={GDRIVE_ID}", MODEL_PATH, quiet=True)
     
-    # Load model with version safety
     try:
         return load(MODEL_PATH)
     except Exception as e:
-        st.error("MODEL LOADING FAILED")
-        st.error(f"Error: {str(e)}")
-        st.error("Try one of these solutions:")
-        st.code("""
-        # Solution 1: Downgrade sklearn
-        pip install scikit-learn==1.0.2
-        
-        # Solution 2: Use in Colab first
-        !pip install scikit-learn==1.0.2
-        !gdown --id 183946cS8Mjmcz7-qiVGU21_84iVDr5ZH
-        """)
+        st.error(f"Model loading failed: {str(e)}")
+        st.error(f"scikit-learn version: {version('scikit-learn')}")
         st.stop()
 
-# --- Initialize App ---
+# --- App Code ---
 model = load_model()
 
 st.set_page_config(page_title="Car Price Predictor", layout="centered", menu_items={
