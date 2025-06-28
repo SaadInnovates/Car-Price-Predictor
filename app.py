@@ -6,16 +6,17 @@ st.set_page_config(layout="wide")
 
 # Background image URLs from your GitHub repo
 image_urls = [
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image1.jpeg",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image2.gif",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image3.png",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image1.jpg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image2.png",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image3.jpg",
     "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image4.jpg",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image5.jpeg",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image6.gif",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image7.png",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image8.jpeg",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image9.jpg",
-    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image10.png"
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image5.jfif",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image5.png",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image6.png",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image7.jpg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image8.jpg",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image9.jfif",
+    "https://raw.githubusercontent.com/SaadInnovates/Car-Price-Predictor/main/images/image10.jfif"
 ]
 
 # Convert list to JS array
