@@ -1,7 +1,8 @@
 # Car Price Predictor
 A machine learning-powered web app to estimate the fair market price of used cars in Pakistan. Built using Streamlit, this project enables users to input car details and receive an accurate price prediction.
+Try it now at https://car-price-predictor-made-by-saad.streamlit.app/
 # Features
-- Predicts car price using a trained CatBoost regression model
+- Predicts car price using RandomForestRegressor model
   
 - Clean and responsive Streamlit web UI
 
